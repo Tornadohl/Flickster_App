@@ -1,25 +1,27 @@
 package com.codepath.flickster.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.codepath.flickster.DetailActivity;
 import com.codepath.flickster.R;
 import com.codepath.flickster.models.Movie;
 
-import java.util.List;
+import org.parceler.Parcels;
 
-import static com.codepath.flickster.R.id.ivPoster;
-import static com.codepath.flickster.R.id.tvOverview;
-import static com.codepath.flickster.R.id.tvTitle;
+import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
@@ -59,6 +61,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         TextView tvOverview;
         ImageView ivPoster;
         TextView tvRelease;
+        RelativeLayout container;
+        RatingBar ratingBar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,14 +70,28 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
             tvRelease = itemView.findViewById(R.id.tvRelease);
+            container = itemView.findViewById(R.id.container);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
         }
 
-        public void bind(Movie movie) {
+        public void bind(final Movie movie) {
             tvTitle.setText(movie.getTitle());
             tvOverview.setText(movie.getOverView());
             tvRelease.setText(movie.getReleaseDate());
+            ratingBar.setRating((float) movie.getVoteAverage());
             Glide.with(context).load(movie.getPosterPath()).into(ivPoster);
+            //Add click listener on the whole row
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Navigate to detail activity
+                    Intent i = new Intent(context, DetailActivity.class);
+                    i.putExtra("movie", Parcels.wrap(movie));
+                    context.startActivity(i);
+                }
+            });
 
         }
+
     }
 }
